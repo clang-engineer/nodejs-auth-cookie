@@ -4,7 +4,7 @@ var url = require('url');
 var qs = require('querystring');
 var template = require('./lib/template.js')
 var path = require('path');
-var sanitizeHtml=require('sanitize-html');
+var sanitizeHtml = require('sanitize-html');
 
 var app = http.createServer(function (request, response) {
     var _url = request.url;
@@ -27,8 +27,8 @@ var app = http.createServer(function (request, response) {
                 var filterID = path.parse(queryData.id).base;
                 fs.readFile(`data/${filterID}`, 'utf8', function (err, description) {
                     var title = queryData.id;
-                    var sanitizeTitle=sanitizeHtml(title);
-                    var sanitizeDescription=sanitizeHtml(description,{allowedTags:['h1']});
+                    var sanitizeTitle = sanitizeHtml(title);
+                    var sanitizeDescription = sanitizeHtml(description, { allowedTags: ['h1'] });
                     var list = template.List(filelist);
                     var html = template.HTML(sanitizeTitle, list, sanitizeDescription,
                         `<a href="/create">CREATE</a>
@@ -116,11 +116,26 @@ var app = http.createServer(function (request, response) {
         request.on('end', function () {
             var post = qs.parse(body);
             var id = post.id;
-            var filterID=path.parse(id).base;
+            var filterID = path.parse(id).base;
             fs.unlink(`data/${filterID}`, function (error) {
                 response.writeHead(302, { Location: `/` });
                 response.end();
             });
+        });
+    } else if (pathname === '/login') {
+        fs.readdir('./data', function (error, filelist) {
+            var description = `
+            <form action="/login_process" method="post">
+            <p><input name="email" type="text" placeholder="email"></p>
+            <p><input name="password" type="password" placeholder="password"></p>
+            <p><input type="submit"></p>
+            </form>
+            `;
+            var list = template.List(filelist);
+            var html = template.HTML('Login', list, description,
+                `<a href="/create">CREATE</a>`);
+            response.writeHead(200);
+            response.end(html);
         });
     } else {
         response.writeHead(404);

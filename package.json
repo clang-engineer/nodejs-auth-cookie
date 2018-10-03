@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/yorez/WEB3-Nodejs-Auth-Cookie#readme",
   "dependencies": {
-    "cookie": "^0.3.1"
+    "cookie": "^0.3.1",
+    "sanitize-html": "^1.19.1"
   }
 }
