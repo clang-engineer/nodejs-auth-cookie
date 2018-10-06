@@ -19,10 +19,10 @@ function authIsOwner(request, response) {
     return isOwner;
 }
 
-function authStatusUI(request,response){
-    var authStatusUI='<a href="/login">login</a>';
-    if(authIsOwner(request,response)){
-    authStatusUI='<a href="/logout_process">logout</a>';
+function authStatusUI(request, response) {
+    var authStatusUI = '<a href="/login">login</a>';
+    if (authIsOwner(request, response)) {
+        authStatusUI = '<a href="/logout_process">logout</a>';
     }
     return authStatusUI;
 }
@@ -39,7 +39,7 @@ var app = http.createServer(function (request, response) {
                 var description = 'make coding with node.js!!';
                 var list = template.List(filelist);
                 var html = template.HTML(title, list, description,
-                    `<a href="/create">CREATE</a>`,authStatusUI(request,response));
+                    `<a href="/create">CREATE</a>`, authStatusUI(request, response));
                 response.writeHead(200);
                 response.end(html);
             });
@@ -57,7 +57,7 @@ var app = http.createServer(function (request, response) {
                         <form action="/delete_process" method="post">
                         <input type="hidden" name="id" value="${title}">
                         <input type="submit" value="delete">
-                        </form>`,authStatusUI(request,response));
+                        </form>`, authStatusUI(request, response));
                     response.writeHead(200);
                     response.end(html);
                 });
@@ -75,7 +75,7 @@ var app = http.createServer(function (request, response) {
             `;
             var list = template.List(filelist);
             var html = template.HTML('CREATE', list, description,
-                `<a href="/create">CREATE</a>`,authStatusUI(request,response));
+                `<a href="/create">CREATE</a>`, authStatusUI(request, response));
             response.writeHead(200);
             response.end(html);
         });
@@ -107,7 +107,7 @@ var app = http.createServer(function (request, response) {
                 <p><input type="submit"></p>
                 </form>
                 `,
-                    `<a href="/create">CREATE</a>`,authStatusUI(request,response));
+                    `<a href="/create">CREATE</a>`, authStatusUI(request, response));
                 response.writeHead(200);
                 response.end(html);
             });
@@ -154,7 +154,7 @@ var app = http.createServer(function (request, response) {
             `;
             var list = template.List(filelist);
             var html = template.HTML('Login', list, description,
-                `<a href="/create">CREATE</a>`,authStatusUI(request,response));
+                `<a href="/create">CREATE</a>`, authStatusUI(request, response));
             response.writeHead(200);
             response.end(html);
         });
@@ -179,6 +179,25 @@ var app = http.createServer(function (request, response) {
                 response.end("1");
             }
         });
+    } else if (pathname === '/logout_process') {
+
+        var body = "";
+        request.on('data', function (data) {
+            body = body + data;
+        });
+        request.on('end', function () {
+            var post = qs.parse(body);
+            response.writeHead(302, {
+                'Set-Cookie': [
+                    `email=;Max-age=0`,
+                    `password=;Max-age=0`,
+                    `nickname=;Max-age=0`
+                ],
+                Location: '/'
+            });
+            response.end();
+        });
+
     } else {
         response.writeHead(404);
         response.end('not found');
