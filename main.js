@@ -5,6 +5,7 @@ var qs = require('querystring');
 var template = require('./lib/template.js')
 var path = require('path');
 var sanitizeHtml = require('sanitize-html');
+var Cookie = require('cookie');
 
 var app = http.createServer(function (request, response) {
     var _url = request.url;
@@ -136,6 +137,27 @@ var app = http.createServer(function (request, response) {
                 `<a href="/create">CREATE</a>`);
             response.writeHead(200);
             response.end(html);
+        });
+    } else if (pathname === '/login_process') {
+        var body = "";
+        request.on('data', function (data) {
+            body = body + data;
+        });
+        request.on('end', function () {
+            var post = qs.parse(body);
+            if (post.email === 'yorez@naver.com' && post.password === '1111') {
+                response.writeHead(302, {
+                    'Set-Cookie': [
+                        `email=${post.email}`,
+                        `password=${post.password}`,
+                        `nickname=young`
+                    ],
+                    Location: '/'
+                });
+                response.end();
+            } else {
+                response.end("1");
+            }
         });
     } else {
         response.writeHead(404);
